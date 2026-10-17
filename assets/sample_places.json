@@ -1,0 +1,32 @@
+{
+  "elements": [
+    {"type": "node", "id": 625522978, "lat": 10.6997720, "lon": 122.5566307,
+     "tags": {"amenity": "restaurant", "cuisine": "italian", "name": "Al Dente"}},
+    {"type": "node", "id": 627760832, "lat": 10.7009170, "lon": 122.5580019,
+     "tags": {"amenity": "restaurant", "name": "The Mellow Mangrove"}},
+    {"type": "node", "id": 663951383, "lat": 10.7264749, "lon": 122.5566396,
+     "tags": {"amenity": "restaurant", "name": "Carlitos"}},
+    {"type": "node", "id": 663951398, "lat": 10.7263247, "lon": 122.5567495,
+     "tags": {"amenity": "cafe", "name": "Coffee Break"}},
+    {"type": "node", "id": 831112459, "lat": 10.6974403, "lon": 122.5431969,
+     "tags": {"amenity": "fast_food", "cuisine": "asian", "name": "Chowking"}},
+    {"type": "node", "id": 936153304, "lat": 10.7139840, "lon": 122.5553667,
+     "tags": {"amenity": "restaurant", "name": "Fortside Manok"}},
+    {"type": "node", "id": 936720405, "lat": 10.6914605, "lon": 122.5722876,
+     "tags": {"amenity": "restaurant", "name": "Mansion Garden"}},
+    {"type": "node", "id": 942489209, "lat": 10.6951011, "lon": 122.5691748,
+     "tags": {"amenity": "restaurant", "name": "Mr. Cow"}},
+    {"type": "node", "id": 942491237, "lat": 10.6934405, "lon": 122.5715146,
+     "tags": {"addr:street": "J. M. Basa Street", "amenity": "fast_food", "cuisine": "barbecue", "name": "Kambal Inasal"}},
+    {"type": "node", "id": 942493170, "lat": 10.6977537, "lon": 122.5698387,
+     "tags": {"addr:street": "Yulo Street", "amenity": "restaurant", "cuisine": "chinese", "name": "Mama Gan"}},
+    {"type": "node", "id": 942493172, "lat": 10.6971970, "lon": 122.5691800,
+     "tags": {"amenity": "cafe", "cuisine": "donut;coffee_shop", "name": "Dunkin'"}},
+    {"type": "node", "id": 942497006, "lat": 10.6959960, "lon": 122.5445693,
+     "tags": {"amenity": "restaurant", "name": "Red's", "opening_hours": "00:00-24:00"}},
+    {"type": "node", "id": 942506721, "lat": 10.7196623, "lon": 122.5599447,
+     "tags": {"addr:street": "Eugenio Lopez Street", "amenity": "restaurant", "cuisine": "american;regional", "name": "Uncle Tom's", "opening_hours": "Mo-Su 10:00-14:00, 16:00-19:30"}},
+    {"type": "node", "id": 1247882945, "lat": 10.6980314, "lon": 122.5673637,
+     "tags": {"amenity": "fast_food", "cuisine": "burger", "name": "Jollibee"}}
+  ]
+}
