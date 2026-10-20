@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/favorites_provider.dart';
 import '../providers/places_provider.dart';
 import '../widgets/place_card.dart';
 
@@ -16,6 +17,7 @@ class DiscoverScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.favorite_border),
+            tooltip: 'Favorites',
             onPressed: () => Navigator.pushNamed(context, '/favorites'),
           ),
         ],
@@ -65,12 +67,16 @@ class DiscoverScreen extends StatelessWidget {
     if (provider.places.isEmpty) {
       return const Center(child: Text('No places found.'));
     }
+
+    final favorites = context.watch<FavoritesProvider>();
     return ListView.builder(
       itemCount: provider.places.length,
       itemBuilder: (context, index) {
         final place = provider.places[index];
         return PlaceCard(
           place: place,
+          isFavorite: favorites.isFavorite(place.id),
+          onFavorite: () => favorites.toggle(place.id),
           onTap: () =>
               Navigator.pushNamed(context, '/details', arguments: place),
         );
