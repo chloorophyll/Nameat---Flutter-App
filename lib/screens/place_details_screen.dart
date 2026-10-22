@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../models/place.dart';
 import '../providers/favorites_provider.dart';
 import '../providers/places_provider.dart';
+import '../utils/format.dart';
+import '../widgets/budget_badge.dart';
 
 class PlaceDetailsScreen extends StatelessWidget {
   const PlaceDetailsScreen({super.key});
@@ -31,21 +33,32 @@ class PlaceDetailsScreen extends StatelessWidget {
     }
   }
 
+  IconData _iconFor(String type) {
+    switch (type) {
+      case 'cafe':
+        return Icons.local_cafe;
+      case 'fast_food':
+        return Icons.fastfood;
+      default:
+        return Icons.restaurant;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Place;
     final favorites = context.watch<FavoritesProvider>();
-    // Look up the latest version so edits show up right away
     final place = context
         .watch<PlacesProvider>()
         .allPlaces
         .firstWhere((p) => p.id == args.id, orElse: () => args);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(place.name),
         actions: [
           IconButton(
+            tooltip: 'Save to favorites',
             icon: Icon(
               favorites.isFavorite(place.id)
                   ? Icons.favorite
@@ -55,6 +68,7 @@ class PlaceDetailsScreen extends StatelessWidget {
           ),
           if (place.isCustom) ...[
             IconButton(
+              tooltip: 'Edit place',
               icon: const Icon(Icons.edit),
               onPressed: () => Navigator.pushNamed(
                 context,
@@ -63,22 +77,103 @@ class PlaceDetailsScreen extends StatelessWidget {
               ),
             ),
             IconButton(
+              tooltip: 'Delete place',
               icon: const Icon(Icons.delete),
               onPressed: () => _confirmDelete(context, place),
             ),
           ],
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(
-          'Cuisine: ${place.cuisine ?? 'Not specified'}\n'
-          'Budget: ${place.budgetLevel == 0 ? 'Not set' : '₱' * place.budgetLevel}\n'
-          'Address: ${place.address ?? 'Not available'}\n'
-          'Hours: ${place.openingHours ?? 'Not available'}\n'
-          'Notes: ${place.notes ?? 'None'}',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
+      body: ListView(
+        children: [
+          Container(
+            height: 180,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              _iconFor(place.type),
+              size: 80,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  place.name,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                BudgetBadge(level: place.budgetLevel),
+                const SizedBox(height: 16),
+                _InfoRow(
+                  icon: Icons.restaurant_menu,
+                  label: 'Cuisine',
+                  value: prettyCuisine(place.cuisine),
+                ),
+                _InfoRow(
+                  icon: Icons.place_outlined,
+                  label: 'Address',
+                  value: place.address ?? 'Not available',
+                ),
+                _InfoRow(
+                  icon: Icons.schedule,
+                  label: 'Opening hours',
+                  value: place.openingHours ?? 'Not available',
+                ),
+                if (place.notes != null)
+                  _InfoRow(
+                    icon: Icons.notes,
+                    label: 'Notes',
+                    value: place.notes!,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: theme.colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: theme.textTheme.labelMedium),
+                Text(value, style: theme.textTheme.bodyLarge),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

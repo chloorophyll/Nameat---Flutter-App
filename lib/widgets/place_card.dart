@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/place.dart';
+import '../utils/format.dart';
+import 'budget_badge.dart';
 
 class PlaceCard extends StatelessWidget {
   final Place place;
@@ -28,21 +30,66 @@ class PlaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: ListTile(
-        leading: Icon(_iconFor(place.type), size: 32),
-        title: Text(place.name),
-        subtitle: Text(
-          '${place.cuisine ?? 'Cuisine not specified'}\n'
-          '${place.address ?? 'Address not available'}',
-        ),
-        isThreeLine: true,
-        trailing: IconButton(
-          icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-          onPressed: onFavorite,
-        ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
         onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  _iconFor(place.type),
+                  color: scheme.onPrimaryContainer,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      place.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(prettyCuisine(place.cuisine)),
+                    Text(
+                      place.address ?? 'Address not available',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 6),
+                    BudgetBadge(level: place.budgetLevel),
+                  ],
+                ),
+              ),
+              IconButton(
+                tooltip: isFavorite ? 'Remove from favorites' : 'Save to favorites',
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? scheme.primary : null,
+                ),
+                onPressed: onFavorite,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
