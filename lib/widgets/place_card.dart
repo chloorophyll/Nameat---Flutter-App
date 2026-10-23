@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../models/place.dart';
 import '../utils/format.dart';
@@ -41,18 +42,29 @@ class PlaceCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: scheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(
-                  _iconFor(place.type),
-                  color: scheme.onPrimaryContainer,
-                ),
-              ),
+              place.photo != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.memory(
+                        base64Decode(place.photo!),
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                      ),
+                    )
+                  : Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: scheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        _iconFor(place.type),
+                        color: scheme.onPrimaryContainer,
+                      ),
+                    ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -80,9 +92,8 @@ class PlaceCard extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: isFavorite
-                    ? 'Remove from favorites'
-                    : 'Save to favorites',
+                tooltip:
+                    isFavorite ? 'Remove from favorites' : 'Save to favorites',
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
                   color: isFavorite ? scheme.primary : null,
