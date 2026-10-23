@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/place.dart';
@@ -41,10 +43,22 @@ class PlaceDetailsScreen extends StatelessWidget {
     );
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not open Maps')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open Maps')),
+      );
     }
+  }
+
+  Future<void> _pickPhoto(BuildContext context, Place place) async {
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800,
+      imageQuality: 70,
+    );
+    if (picked == null || !context.mounted) return;
+    final bytes = await picked.readAsBytes();
+    if (!context.mounted) return;
+    await context.read<PlacesProvider>().setPhoto(place, base64Encode(bytes));
   }
 
   IconData _iconFor(String type) {
@@ -58,14 +72,40 @@ class PlaceDetailsScreen extends StatelessWidget {
     }
   }
 
+  Widget _header(BuildContext context, Place place) {
+    final theme = Theme.of(context);
+    return Container(
+      height: 200,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: place.photo != null
+          ? Image.memory(
+              base64Decode(place.photo!),
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+            )
+          : Icon(
+              _iconFor(place.type),
+              size: 80,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Place;
     final favorites = context.watch<FavoritesProvider>();
-    final place = context.watch<PlacesProvider>().allPlaces.firstWhere(
-      (p) => p.id == args.id,
-      orElse: () => args,
-    );
+    final place = context
+        .watch<PlacesProvider>()
+        .allPlaces
+        .firstWhere((p) => p.id == args.id, orElse: () => args);
     final theme = Theme.of(context);
     final hasLocation = place.latitude != 0 || place.longitude != 0;
 
@@ -85,8 +125,11 @@ class PlaceDetailsScreen extends StatelessWidget {
             IconButton(
               tooltip: 'Edit place',
               icon: const Icon(Icons.edit),
-              onPressed: () =>
-                  Navigator.pushNamed(context, '/place-form', arguments: place),
+              onPressed: () => Navigator.pushNamed(
+                context,
+                '/place-form',
+                arguments: place,
+              ),
             ),
             IconButton(
               tooltip: 'Delete place',
@@ -98,17 +141,27 @@ class PlaceDetailsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          Container(
-            height: 180,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Icon(
-              _iconFor(place.type),
-              size: 80,
-              color: theme.colorScheme.onPrimaryContainer,
+          _header(context, place),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => _pickPhoto(context, place),
+                  icon: const Icon(Icons.add_a_photo_outlined),
+                  label: Text(
+                    place.photo == null ? 'Add photo' : 'Change photo',
+                  ),
+                ),
+                if (place.photo != null) ...[
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () =>
+                        context.read<PlacesProvider>().setPhoto(place, null),
+                    child: const Text('Remove'),
+                  ),
+                ],
+              ],
             ),
           ),
           Padding(
