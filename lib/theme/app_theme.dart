@@ -7,10 +7,7 @@ class AppTheme {
   static const _brown = Color(0xFF7A4A2B);
 
   static ThemeData get light {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: _brown,
-      surface: _cream,
-    );
+    final scheme = ColorScheme.fromSeed(seedColor: _brown, surface: _cream);
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/place.dart';
 import '../providers/favorites_provider.dart';
 import '../providers/places_provider.dart';
@@ -33,6 +34,19 @@ class PlaceDetailsScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _openInMaps(BuildContext context, Place place) async {
+    final uri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1'
+      '&query=${place.latitude},${place.longitude}',
+    );
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open Maps')));
+    }
+  }
+
   IconData _iconFor(String type) {
     switch (type) {
       case 'cafe':
@@ -48,11 +62,12 @@ class PlaceDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Place;
     final favorites = context.watch<FavoritesProvider>();
-    final place = context
-        .watch<PlacesProvider>()
-        .allPlaces
-        .firstWhere((p) => p.id == args.id, orElse: () => args);
+    final place = context.watch<PlacesProvider>().allPlaces.firstWhere(
+      (p) => p.id == args.id,
+      orElse: () => args,
+    );
     final theme = Theme.of(context);
+    final hasLocation = place.latitude != 0 || place.longitude != 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -70,11 +85,8 @@ class PlaceDetailsScreen extends StatelessWidget {
             IconButton(
               tooltip: 'Edit place',
               icon: const Icon(Icons.edit),
-              onPressed: () => Navigator.pushNamed(
-                context,
-                '/place-form',
-                arguments: place,
-              ),
+              onPressed: () =>
+                  Navigator.pushNamed(context, '/place-form', arguments: place),
             ),
             IconButton(
               tooltip: 'Delete place',
@@ -134,6 +146,32 @@ class PlaceDetailsScreen extends StatelessWidget {
                     label: 'Notes',
                     value: place.notes!,
                   ),
+                const SizedBox(height: 12),
+                Text('Set budget level', style: theme.textTheme.labelMedium),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: [1, 2, 3].map((level) {
+                    return ChoiceChip(
+                      label: Text('₱' * level),
+                      selected: place.budgetLevel == level,
+                      onSelected: (_) => context
+                          .read<PlacesProvider>()
+                          .setBudget(place, level),
+                    );
+                  }).toList(),
+                ),
+                if (hasLocation) ...[
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () => _openInMaps(context, place),
+                      icon: const Icon(Icons.map_outlined),
+                      label: const Text('Open in Maps'),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

@@ -17,9 +17,9 @@ class BudgetBadge extends StatelessWidget {
       child: Text(
         level == 0 ? 'Budget not set' : '₱' * level,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: scheme.onSecondaryContainer,
-              fontWeight: FontWeight.w600,
-            ),
+          color: scheme.onSecondaryContainer,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

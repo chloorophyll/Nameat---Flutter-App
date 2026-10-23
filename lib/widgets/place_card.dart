@@ -80,7 +80,9 @@ class PlaceCard extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: isFavorite ? 'Remove from favorites' : 'Save to favorites',
+                tooltip: isFavorite
+                    ? 'Remove from favorites'
+                    : 'Save to favorites',
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
                   color: isFavorite ? scheme.primary : null,

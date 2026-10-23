@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/favorites_provider.dart';
 import '../providers/places_provider.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/filter_sheet.dart';
 import '../widgets/place_card.dart';
 
 class DiscoverScreen extends StatelessWidget {
@@ -22,12 +23,31 @@ class DiscoverScreen extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
-            child: TextField(
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Search places',
-              ),
-              onChanged: context.read<PlacesProvider>().setSearchQuery,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.search),
+                      hintText: 'Search places',
+                    ),
+                    onChanged: context.read<PlacesProvider>().setSearchQuery,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Badge(
+                  isLabelVisible: provider.hasActiveFilters,
+                  child: IconButton.filledTonal(
+                    tooltip: 'Filters',
+                    icon: const Icon(Icons.tune),
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => const FilterSheet(),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(child: _buildBody(context, provider)),
@@ -50,10 +70,16 @@ class DiscoverScreen extends StatelessWidget {
       );
     }
     if (provider.places.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.search_off,
         title: 'No places found',
-        message: 'Try a different search, or add your own place with +.',
+        message: provider.hasActiveFilters
+            ? 'No places match your filters.'
+            : 'Try a different search, or add your own place with +.',
+        actionLabel: provider.hasActiveFilters ? 'Reset filters' : null,
+        onAction: provider.hasActiveFilters
+            ? context.read<PlacesProvider>().clearFilters
+            : null,
       );
     }
 
