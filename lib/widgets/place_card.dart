@@ -83,9 +83,15 @@ class PlaceCard extends StatelessWidget {
                 tooltip: isFavorite
                     ? 'Remove from favorites'
                     : 'Save to favorites',
-                icon: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? scheme.primary : null,
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) =>
+                      ScaleTransition(scale: animation, child: child),
+                  child: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    key: ValueKey(isFavorite),
+                    color: isFavorite ? scheme.primary : null,
+                  ),
                 ),
                 onPressed: onFavorite,
               ),

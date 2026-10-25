@@ -43,9 +43,9 @@ class PlaceDetailsScreen extends StatelessWidget {
     );
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open Maps')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open Maps')));
     }
   }
 
@@ -102,10 +102,10 @@ class PlaceDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Place;
     final favorites = context.watch<FavoritesProvider>();
-    final place = context
-        .watch<PlacesProvider>()
-        .allPlaces
-        .firstWhere((p) => p.id == args.id, orElse: () => args);
+    final place = context.watch<PlacesProvider>().allPlaces.firstWhere(
+      (p) => p.id == args.id,
+      orElse: () => args,
+    );
     final theme = Theme.of(context);
     final hasLocation = place.latitude != 0 || place.longitude != 0;
 
@@ -125,11 +125,8 @@ class PlaceDetailsScreen extends StatelessWidget {
             IconButton(
               tooltip: 'Edit place',
               icon: const Icon(Icons.edit),
-              onPressed: () => Navigator.pushNamed(
-                context,
-                '/place-form',
-                arguments: place,
-              ),
+              onPressed: () =>
+                  Navigator.pushNamed(context, '/place-form', arguments: place),
             ),
             IconButton(
               tooltip: 'Delete place',
