@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../models/place.dart';
 
 class PlacesService {
-  static const _url = 'https://overpass.kumi.systems/api/interpreter';
+  static const _url = 'https://overpass-api.de/api/interpreter';
   static const _query = '''
 [out:json][timeout:25];
 node["amenity"~"restaurant|cafe|fast_food"]["name"](10.67,122.52,10.76,122.60);
@@ -20,7 +20,7 @@ out 100;
             headers: kIsWeb ? {} : {'User-Agent': 'Nameat/1.0'},
             body: {'data': _query},
           )
-          .timeout(const Duration(seconds: 20));
+          .timeout(const Duration(seconds: 40));
 
       if (response.statusCode != 200) {
         throw Exception('status ${response.statusCode}');

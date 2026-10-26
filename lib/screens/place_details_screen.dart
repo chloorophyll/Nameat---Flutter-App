@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/place.dart';
@@ -47,6 +49,18 @@ class PlaceDetailsScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _pickPhoto(BuildContext context, Place place) async {
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800,
+      imageQuality: 70,
+    );
+    if (picked == null || !context.mounted) return;
+    final bytes = await picked.readAsBytes();
+    if (!context.mounted) return;
+    await context.read<PlacesProvider>().setPhoto(place, base64Encode(bytes));
+  }
+
   IconData _iconFor(String type) {
     switch (type) {
       case 'cafe':
@@ -56,6 +70,32 @@ class PlaceDetailsScreen extends StatelessWidget {
       default:
         return Icons.restaurant;
     }
+  }
+
+  Widget _header(BuildContext context, Place place) {
+    final theme = Theme.of(context);
+    return Container(
+      height: 200,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: place.photo != null
+          ? Image.memory(
+              base64Decode(place.photo!),
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+            )
+          : Icon(
+              _iconFor(place.type),
+              size: 80,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
+    );
   }
 
   @override
@@ -98,17 +138,27 @@ class PlaceDetailsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          Container(
-            height: 180,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Icon(
-              _iconFor(place.type),
-              size: 80,
-              color: theme.colorScheme.onPrimaryContainer,
+          _header(context, place),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => _pickPhoto(context, place),
+                  icon: const Icon(Icons.add_a_photo_outlined),
+                  label: Text(
+                    place.photo == null ? 'Add photo' : 'Change photo',
+                  ),
+                ),
+                if (place.photo != null) ...[
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () =>
+                        context.read<PlacesProvider>().setPhoto(place, null),
+                    child: const Text('Remove'),
+                  ),
+                ],
+              ],
             ),
           ),
           Padding(

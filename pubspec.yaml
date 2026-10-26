@@ -39,6 +39,7 @@ dependencies:
   shared_preferences: ^2.5.6
   image_picker: ^1.2.4
   url_launcher: ^6.3.3
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +64,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/sample_places.json
+    - assets/icon.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
