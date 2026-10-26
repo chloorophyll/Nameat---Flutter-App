@@ -1,4 +1,3 @@
-/// Turns raw OSM cuisine tags like "donut;coffee_shop" into "Donut, Coffee shop".
 String prettyCuisine(String? raw) {
   if (raw == null || raw.trim().isEmpty) return 'Cuisine not specified';
   return raw

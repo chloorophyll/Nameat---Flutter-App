@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
-/// Looks up a street address from coordinates using OpenStreetMap Nominatim.
 class GeocodingService {
   Future<String?> reverse(double latitude, double longitude) async {
     try {

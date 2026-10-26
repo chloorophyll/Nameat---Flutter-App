@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../models/place.dart';
 import '../utils/format.dart';
@@ -30,6 +31,7 @@ class PlaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('CARD ${place.name} photo=${place.photo != null}');
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
@@ -41,18 +43,29 @@ class PlaceCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: scheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(
-                  _iconFor(place.type),
-                  color: scheme.onPrimaryContainer,
-                ),
-              ),
+              place.photo != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.memory(
+                        base64Decode(place.photo!),
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                      ),
+                    )
+                  : Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: scheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        _iconFor(place.type),
+                        color: scheme.onPrimaryContainer,
+                      ),
+                    ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -83,15 +96,9 @@ class PlaceCard extends StatelessWidget {
                 tooltip: isFavorite
                     ? 'Remove from favorites'
                     : 'Save to favorites',
-                icon: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (child, animation) =>
-                      ScaleTransition(scale: animation, child: child),
-                  child: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    key: ValueKey(isFavorite),
-                    color: isFavorite ? scheme.primary : null,
-                  ),
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? scheme.primary : null,
                 ),
                 onPressed: onFavorite,
               ),
