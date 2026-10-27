@@ -25,7 +25,7 @@ class _RouletteSheetState extends State<RouletteSheet> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _spin());
   }
 
-  /// Flickers through random places, slowing down, then lands on the winner.
+  
   Future<void> _spin() async {
     final pool = widget.places;
     if (pool.isEmpty) return;
