@@ -60,24 +60,27 @@ class PlacesProvider extends ChangeNotifier {
           !p.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
         return false;
       }
-      if (_cuisineFilter != null) {
+      if (_cuisineFilter != null) {}
+        if (_cuisineFilter != null) {
         final tokens = _tokens(p.cuisine);
         bool matches = false;
         
-        if (_cuisineFilter == 'international') {
-
+        if (_cuisineFilter == 'fast_food') {
+          matches = tokens.any((t) => 
+            t.contains('fast') || 
+            t.contains('burger') || 
+            t.contains('chicken') ||
+            t.contains('fries')
+          );
+        } else if (_cuisineFilter == 'international') {
           matches = tokens.any((t) => 
             t.contains('chinese') || 
             t.contains('italian') || 
             t.contains('mexican') || 
             t.contains('korean') || 
             t.contains('japanese') ||
-            t.contains('international') ||
-            t.contains('american') ||
-            t.contains('asian')
+            t.contains('international')
           );
-        } else if (_cuisineFilter == 'fast_food') {
-          matches = tokens.any((t) => t.contains('fast') || t.contains('burger') || t.contains('chicken'));
         } else if (_cuisineFilter == 'cafe') {
           matches = tokens.any((t) => t.contains('cafe') || t.contains('bakery') || t.contains('coffee'));
         } else if (_cuisineFilter == 'ilonggo') {
@@ -87,9 +90,6 @@ class PlacesProvider extends ChangeNotifier {
         }
 
         if (!matches) return false;
-      }
-      if (_budgetFilter != 0 && p.budgetLevel != _budgetFilter) {
-        return false;
       }
       return true;
     }).toList();

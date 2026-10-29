@@ -36,7 +36,7 @@ class DiscoverScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Welcome to Iloilo City, the City of Gastronomy ✨',
+                  'Welcome to Iloilo City! The City of Gastronomy ✨',
                   style: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
