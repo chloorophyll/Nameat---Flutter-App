@@ -59,21 +59,24 @@ class _HomeShellState extends State<HomeShell> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 68,
+        toolbarHeight: 78,
         titleSpacing: 12,
-        title: Row(
-          children: [
-            const AppLogo(size: 98),
-            const SizedBox(width: 2),
-            Text(
-              'Nameat!',
-              style: GoogleFonts.homemadeApple(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+        title: Transform.translate(
+          offset: const Offset(0, 13), 
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const AppLogo(size: 85),
+              const SizedBox(width: 2),
+              Text(
+                'Nameat!',
+                style: GoogleFonts.homemadeApple(
+                  fontSize: 25,
+                  color: theme.colorScheme.primary,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           PopupMenuButton<String>(
