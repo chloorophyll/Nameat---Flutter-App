@@ -16,12 +16,10 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _page = 0; // 0 = Discover, 1 = Favorites
 
-  // Bottom bar positions: 0 = Discover, 1 = Add place, 2 = Favorites
   int get _barIndex => _page == 0 ? 0 : 2;
 
   void _onBarTap(int index) {
     if (index == 1) {
-      // Add place is an action, not a tab, so it opens the form
       Navigator.pushNamed(context, '/place-form');
       return;
     }
