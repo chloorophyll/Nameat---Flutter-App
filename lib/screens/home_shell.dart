@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/app_logo.dart';
 import 'discover_screen.dart';
 import 'favorites_screen.dart';
@@ -13,29 +16,109 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _page = 0; // 0 = Discover, 1 = Favorites
 
-  // Bottom bar positions: 0 = Discover, 1 = Add, 2 = Favorites
+  // Bottom bar positions: 0 = Discover, 1 = Add place, 2 = Favorites
   int get _barIndex => _page == 0 ? 0 : 2;
 
   void _onBarTap(int index) {
     if (index == 1) {
+      // Add place is an action, not a tab, so it opens the form
       Navigator.pushNamed(context, '/place-form');
       return;
     }
     setState(() => _page = index == 0 ? 0 : 1);
   }
 
+  Future<void> _confirmLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Log out?'),
+        content: const Text('You will need to sign in again.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Log out'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await context.read<AuthProvider>().logout();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final name = context.watch<AuthProvider>().displayName;
+    final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 68,
         titleSpacing: 12,
-        title: const Row(
-          children: [AppLogo(size: 34), SizedBox(width: 10), Text('Nameat!')],
+        title: Row(
+          children: [
+            const AppLogo(size: 98),
+            const SizedBox(width: 2),
+            Text(
+              'Nameat!',
+              style: GoogleFonts.homemadeApple(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
         ),
+        actions: [
+          PopupMenuButton<String>(
+            tooltip: 'Account',
+            onSelected: (value) {
+              if (value == 'logout') _confirmLogout();
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                enabled: false,
+                child: Text(name.isEmpty ? 'Signed in' : 'Hi, $name'),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20),
+                    SizedBox(width: 8),
+                    Text('Log out'),
+                  ],
+                ),
+              ),
+            ],
+            child: Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                child: Text(initial),
+              ),
+            ),
+          ),
+        ],
       ),
-      body: IndexedStack(
-        index: _page,
-        children: const [DiscoverScreen(), FavoritesScreen()],
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: IndexedStack(
+            index: _page,
+            children: const [DiscoverScreen(), FavoritesScreen()],
+          ),
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _barIndex,

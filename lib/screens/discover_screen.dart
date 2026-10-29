@@ -8,6 +8,7 @@ import '../widgets/filter_sheet.dart';
 import '../widgets/place_card.dart';
 import '../widgets/roulette_sheet.dart';
 import '../widgets/skeleton_card.dart';
+import '../providers/auth_provider.dart';
 
 class DiscoverScreen extends StatelessWidget {
   const DiscoverScreen({super.key});
@@ -15,10 +16,25 @@ class DiscoverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<PlacesProvider>();
+    final name = context.watch<AuthProvider>().displayName;
 
     return Scaffold(
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                name.isEmpty
+                    ? 'What are you craving today?'
+                    : 'Hi, $name! What are you craving today?',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
             child: Row(

@@ -29,15 +29,25 @@ class PlaceCard extends StatelessWidget {
     }
   }
 
+  Color _accentFor(String type) {
+    switch (type) {
+      case 'cafe':
+        return const Color(0xFFE8D5B7);
+      case 'fast_food':
+        return const Color(0xFFFFD9C7);
+      default:
+        return const Color(0xFFFFF1CC);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    debugPrint('CARD ${place.name} photo=${place.photo != null}');
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
     return Card(
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -58,7 +68,7 @@ class PlaceCard extends StatelessWidget {
                       width: 64,
                       height: 64,
                       decoration: BoxDecoration(
-                        color: scheme.primaryContainer,
+                        color: _accentFor(place.type),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(
@@ -96,9 +106,15 @@ class PlaceCard extends StatelessWidget {
                 tooltip: isFavorite
                     ? 'Remove from favorites'
                     : 'Save to favorites',
-                icon: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? scheme.primary : null,
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) =>
+                      ScaleTransition(scale: animation, child: child),
+                  child: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    key: ValueKey(isFavorite),
+                    color: isFavorite ? scheme.primary : null,
+                  ),
                 ),
                 onPressed: onFavorite,
               ),
