@@ -14,7 +14,7 @@ class HomeShell extends StatefulWidget {
 }
 
 class _HomeShellState extends State<HomeShell> {
-  int _page = 0; // 0 = Discover, 1 = Favorites
+  int _page = 0; 
 
   int get _barIndex => _page == 0 ? 0 : 2;
 
