@@ -8,6 +8,7 @@ import '../widgets/filter_sheet.dart';
 import '../widgets/place_card.dart';
 import '../widgets/roulette_sheet.dart';
 import '../widgets/skeleton_card.dart';
+import '../providers/auth_provider.dart';
 
 class DiscoverScreen extends StatelessWidget {
   const DiscoverScreen({super.key});
@@ -15,10 +16,36 @@ class DiscoverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<PlacesProvider>();
+    final name = context.watch<AuthProvider>().displayName;
 
     return Scaffold(
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Hi, $name! What are you craving today?',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Welcome to Iloilo City! The City of Gastronomy ✨',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
             child: Row(
@@ -48,17 +75,39 @@ class DiscoverScreen extends StatelessWidget {
               ],
             ),
           ),
+          // Category Quick-Filter Chips
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                children: [
+                  _buildCategoryChip(context, provider, 'All', null),
+                  const SizedBox(width: 8),
+                  _buildCategoryChip(context, provider, 'Ilonggo Specialties', 'ilonggo'),
+                  const SizedBox(width: 8),
+                  _buildCategoryChip(context, provider, 'International', 'international'),
+                  const SizedBox(width: 8),
+                  _buildCategoryChip(context, provider, 'Cafes & Bakery', 'cafe'),
+                  const SizedBox(width: 8),
+                  _buildCategoryChip(context, provider, 'Fast Food', 'fast food'),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
             child: SizedBox(
               width: double.infinity,
               child: FilledButton.tonalIcon(
                 onPressed: provider.status == LoadStatus.success
                     ? () => showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (_) => RouletteSheet(places: provider.places),
-                      )
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (_) => RouletteSheet(places: provider.places),
+                        )
                     : null,
                 icon: const Icon(Icons.casino_outlined),
                 label: const Text("Can't decide? Spin for a place"),
@@ -71,10 +120,24 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildCategoryChip(BuildContext context, PlacesProvider provider, String label, String? cuisineValue) {
+    final isSelected = cuisineValue == null 
+        ? provider.cuisineFilter == null 
+        : provider.cuisineFilter == cuisineValue;
+
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        provider.setCuisineFilter(selected ? cuisineValue : null);
+      },
+    );
+  }
+
   Widget _buildBody(BuildContext context, PlacesProvider provider) {
     if (provider.status == LoadStatus.loading) {
       return ListView.builder(
-        itemCount: 6,
+        itemCount: 6, 
         itemBuilder: (context, index) => const SkeletonCard(),
       );
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/app_logo.dart';
@@ -45,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
           )
         : await auth.login(_usernameController.text, _passwordController.text);
     if (!mounted) return;
-    // On success, AuthGate swaps this screen for the app automatically.
+  
     setState(() {
       _busy = false;
       _error = error;
@@ -58,9 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
@@ -69,22 +70,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Center(child: AppLogo(size: 88)),
-                    const SizedBox(height: 16),
+                    Transform.translate(
+                      offset: const Offset(0, 38),
+                      child: const Center(child: AppLogo(size: 250)),
+                    ),
+                    const SizedBox(height: 0),
                     Text(
                       'Nameat!',
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: GoogleFonts.homemadeApple(
+                        fontSize: 32,
                         fontWeight: FontWeight.w800,
                         color: theme.colorScheme.primary,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
-                      'Find where to eat in Iloilo City',
+                      'Find where to eat in the city of Love!',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium,
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 16),
                     if (_isRegister) ...[
                       TextFormField(
                         controller: _nameController,
@@ -97,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? 'Please enter your name'
                             : null,
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 12),
                     ],
                     TextFormField(
                       controller: _usernameController,
@@ -116,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _hidePassword,
@@ -138,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           : null,
                     ),
                     if (_isRegister) ...[
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 12),
                       TextFormField(
                         controller: _confirmController,
                         obscureText: _hidePassword,
@@ -152,14 +158,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                     if (_error != null) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       Text(
                         _error!,
                         textAlign: TextAlign.center,
                         style: TextStyle(color: theme.colorScheme.error),
                       ),
                     ],
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     FilledButton(
                       onPressed: _busy ? null : _submit,
                       child: _busy
@@ -181,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             : 'New here? Create an account',
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Text(
                       'Accounts are stored on this device only.',
                       textAlign: TextAlign.center,

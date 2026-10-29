@@ -45,7 +45,6 @@ class PlacesProvider extends ChangeNotifier {
         .toList();
   }
 
-  /// Every distinct cuisine found in the data, for the filter chips.
   List<String> get cuisines {
     final set = <String>{};
     for (final p in allPlaces) {
@@ -54,19 +53,43 @@ class PlacesProvider extends ChangeNotifier {
     return set.toList()..sort();
   }
 
-  /// Places after search, cuisine, and budget filters are applied.
+  
   List<Place> get places {
     return allPlaces.where((p) {
       if (_searchQuery.isNotEmpty &&
           !p.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
         return false;
       }
-      if (_cuisineFilter != null &&
-          !_tokens(p.cuisine).contains(_cuisineFilter)) {
-        return false;
-      }
-      if (_budgetFilter != 0 && p.budgetLevel != _budgetFilter) {
-        return false;
+      if (_cuisineFilter != null) {}
+        if (_cuisineFilter != null) {
+        final tokens = _tokens(p.cuisine);
+        bool matches = false;
+        
+        if (_cuisineFilter == 'fast_food') {
+          matches = tokens.any((t) => 
+            t.contains('fast') || 
+            t.contains('burger') || 
+            t.contains('chicken') ||
+            t.contains('fries')
+          );
+        } else if (_cuisineFilter == 'international') {
+          matches = tokens.any((t) => 
+            t.contains('chinese') || 
+            t.contains('italian') || 
+            t.contains('mexican') || 
+            t.contains('korean') || 
+            t.contains('japanese') ||
+            t.contains('international')
+          );
+        } else if (_cuisineFilter == 'cafe') {
+          matches = tokens.any((t) => t.contains('cafe') || t.contains('bakery') || t.contains('coffee'));
+        } else if (_cuisineFilter == 'ilonggo') {
+          matches = tokens.any((t) => t.contains('ilonggo') || t.contains('batchoy') || t.contains('local') || t.contains('filipino'));
+        } else {
+          matches = tokens.contains(_cuisineFilter);
+        }
+
+        if (!matches) return false;
       }
       return true;
     }).toList();
@@ -93,8 +116,7 @@ class PlacesProvider extends ChangeNotifier {
     if (_status == LoadStatus.success) unawaited(_enrichAddresses());
   }
 
-  /// Fills in missing addresses one at a time (Nominatim allows 1 request
-  /// per second) and caches them so later launches are instant.
+
   Future<void> _enrichAddresses() async {
     if (_enriching) return;
     _enriching = true;
@@ -139,7 +161,6 @@ class PlacesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Sets a budget level. API places are remembered on the device by id.
   Future<void> setBudget(Place place, int level) async {
     place.budgetLevel = level;
     if (place.isCustom) {
@@ -151,7 +172,7 @@ class PlacesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Saves or removes a photo (base64) for any place.
+
   Future<void> setPhoto(Place place, String? base64Image) async {
     place.photo = base64Image;
     if (place.isCustom) {
@@ -167,14 +188,13 @@ class PlacesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // CREATE
+
   Future<void> addPlace(Place place) async {
     _customPlaces.insert(0, place);
     await _saveCustomPlaces();
     notifyListeners();
   }
 
-  // UPDATE
   Future<void> updatePlace(Place updated) async {
     final index = _customPlaces.indexWhere((p) => p.id == updated.id);
     if (index == -1) return;
@@ -183,7 +203,6 @@ class PlacesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // DELETE
   Future<void> deletePlace(int id) async {
     _customPlaces.removeWhere((p) => p.id == id);
     await _saveCustomPlaces();

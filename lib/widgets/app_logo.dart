@@ -3,25 +3,28 @@ import 'package:flutter/material.dart';
 class AppLogo extends StatelessWidget {
   final double size;
 
-  const AppLogo({super.key, this.size = 40});
+  final bool tint;
+
+  const AppLogo({super.key, this.size = 40, this.tint = true});
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
+    final color = Theme.of(context).colorScheme.primary;
+
+    final image = Image.asset(
+      'assets/icon.png',
       width: size,
       height: size,
-      padding: EdgeInsets.all(size * 0.12),
-      decoration: BoxDecoration(
-        color: scheme.primary,
-        borderRadius: BorderRadius.circular(size * 0.28),
-      ),
-      child: Image.asset(
-        'assets/icon.png',
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) =>
-            Icon(Icons.restaurant_menu, color: scheme.onPrimary),
-      ),
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) =>
+          Icon(Icons.restaurant_menu, size: size, color: color),
+    );
+
+    if (!tint) return image;
+
+    return ColorFiltered(
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      child: image,
     );
   }
 }
